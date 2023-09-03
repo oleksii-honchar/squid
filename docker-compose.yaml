@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  squid:
+    env_file:
+      - project.env
+    image: tuiteraz/squid:${IMAGE_TAG}
+    container_name: tuiteraz-squid
+    user: root
+    ports:
+      - 5138:5138
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
