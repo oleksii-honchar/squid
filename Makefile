@@ -8,18 +8,14 @@ BOLD_ON=\033[1m
 BOLD_OFF=\033[21m
 CLEAR=\033[2J
 
-include project.env
-export $(shell sed 's/=.*//' project.env)
+export LATEST_VERSION=$(shell cat ./latest-version.txt)
 
 .PHONY: help
 
 help:
-	@echo "oleksii-honchar/squid" automation commands:
+	@echo "tuiteraz/squid" automation commands:
 	@echo
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(firstword $(MAKEFILE_LIST)) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-
-check-project-env-vars:
-	@bash ./devops/local/scripts/check-project-env-vars.sh
 
 logs: ## docker logs
 	@docker compose logs --follow
@@ -27,14 +23,14 @@ logs: ## docker logs
 log: ## docker log for svc=<docker service name>
 	@docker compose logs --follow ${svc}
 
-up: check-project-env-vars ## docker up, or svc=<svc-name>
+up:  ## docker up, or svc=<svc-name>
 	@docker compose up --build --remove-orphans -d ${svc}
 
-down: check-project-env-vars ## docker down, or svc=<svc-name>
+down: ## docker down, or svc=<svc-name>
 	@docker compose down ${svc}
 
 .ONESHELL:
-restart: check-project-env-vars ## restart all
+restart: ## restart all
 	@docker compose down
 	@docker compose up --build --remove-orphans -d
 	@docker compose logs --follow
@@ -42,12 +38,12 @@ restart: check-project-env-vars ## restart all
 exec-sh: ## get shell for svc=<svc-name> container
 	@docker exec -it ${svc} sh
 
-build: check-project-env-vars
-	@docker build --load -f ./Dockerfile -t tuiteraz/squid:${IMAGE_TAG} --platform linux/arm64 .
+build: 
+	@docker build --load -f ./Dockerfile -t tuiteraz/squid:$(LATEST_VERSION) --platform linux/arm64 .
 
 tag-latest: check-project-env-vars
-	@docker tag tuiteraz/squid:${IMAGE_TAG} tuiteraz/squid:latest
+	@docker tag tuiteraz/squid:$(LATEST_VERSION) tuiteraz/squid:latest
 
-push: check-project-env-vars
-	@docker push docker.io/tuiteraz/squid:${IMAGE_TAG}
+push: 
+	@docker push docker.io/tuiteraz/squid:$(LATEST_VERSION)
 	@docker push docker.io/tuiteraz/squid:latest

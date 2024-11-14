@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   squid:
-    env_file:
-      - project.env
-    image: tuiteraz/squid:${IMAGE_TAG}
+    image: tuiteraz/squid:${LATEST_VERSION}
     container_name: tuiteraz-squid
     user: root
     ports:

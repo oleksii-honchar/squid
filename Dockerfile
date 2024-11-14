@@ -1,5 +1,5 @@
-FROM arm64v8/alpine
-RUN apk --no-cache add squid
+FROM alpine:3.18.4
+RUN apk --no-cache add squid bind-tools 
 
 ENV SQUID_LOGS_DIR="/var/log/squid"
 
@@ -17,4 +17,4 @@ EXPOSE 3128
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # "N" - non-daemon, "Y" - syntax check, "d 1" - debug level 1
-CMD ["/usr/sbin/squid", "-NYd 1"]
+CMD sh -c '/usr/sbin/squid -NYd 1'
